@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using TravelBookingAPI.Data;
 using TravelBookingAPI.Models;
 using TravelBookingAPI.Repository.IRepository;
@@ -19,6 +21,7 @@ namespace TravelBookingAPI.Controllers
             _applicationDbContext=applicationDbContext;
         }
         [HttpGet]
+        [Authorize]
         public ActionResult Get()
         {
             var result = _journeyRepository.Get().ToList();
@@ -27,6 +30,7 @@ namespace TravelBookingAPI.Controllers
 
         }
         [HttpPost]
+        [Authorize]
         public ActionResult Create(Journey journey)
         {
          
@@ -37,7 +41,7 @@ namespace TravelBookingAPI.Controllers
             }
             if (result.AirLineCode!=journey.AirLineCode)
             {
-                return Ok("not found");
+                return Ok("AirLine not found");
             }
             var result1 = _journeyRepository.Get().ToList();
           var result2=  result1.Where(x => (x.AirLineCode==journey.AirLineCode) &&(x.FlightCode==journey.FlightCode)&&(x.TravelDate==journey.TravelDate));
@@ -50,6 +54,7 @@ namespace TravelBookingAPI.Controllers
 
         }
         [HttpPut]
+        [Authorize]
         public ActionResult Update(Journey journey)
         {
             _journeyRepository.Update(journey);
@@ -57,7 +62,9 @@ namespace TravelBookingAPI.Controllers
             return Ok(_journeyRepository.Get());
         }
         [HttpDelete]
+        [Authorize(Roles = "admin")]
         public ActionResult Delete(int id)
+          
         {
             _journeyRepository.Delete(id);
             _journeyRepository.Save();

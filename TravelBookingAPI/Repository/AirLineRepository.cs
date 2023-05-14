@@ -1,12 +1,14 @@
 ﻿using TravelBookingAPI.Data;
 using TravelBookingAPI.Models;
 using TravelBookingAPI.Repository.IRepository;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TravelBookingAPI.Repository
 {
     public class AirLineRepository : IAirLineRepository
     {
         private readonly ApplicationDbContext _applicationDbContext;
+       
 
         public AirLineRepository(ApplicationDbContext applicationDbContext)
         {
@@ -29,7 +31,7 @@ namespace TravelBookingAPI.Repository
             return _applicationDbContext.AirLines.ToList();
         }
 
-       
+
 
         public void Update(AirLine airLine)
         {
@@ -37,7 +39,10 @@ namespace TravelBookingAPI.Repository
         }
         public void Save()
         {
+
             _applicationDbContext.SaveChanges();
+
         }
+
     }
 }

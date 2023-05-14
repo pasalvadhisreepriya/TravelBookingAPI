@@ -89,7 +89,7 @@ namespace TravelBookingAPI.Migrations
                     b.ToTable("Journey");
                 });
 
-            modelBuilder.Entity("TravelBookingAPI.Models.LocalUser", b =>
+            modelBuilder.Entity("TravelBookingAPI.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -114,28 +114,6 @@ namespace TravelBookingAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.ToTable("LocalUsers");
-                });
-
-            modelBuilder.Entity("TravelBookingAPI.Models.User", b =>
-                {
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Email");
 
                     b.ToTable("Users");
                 });

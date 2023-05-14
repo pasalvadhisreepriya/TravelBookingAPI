@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TravelBookingAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class First : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -40,30 +40,34 @@ namespace TravelBookingAPI.Migrations
                 name: "Journey",
                 columns: table => new
                 {
-                    FlightCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FromCity = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ToCity = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TravelDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AirLineCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FlightCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NumberOfPassengers = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Journey", x => x.FlightCode);
+                    table.PrimaryKey("PK_Journey", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Email);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
         }
 

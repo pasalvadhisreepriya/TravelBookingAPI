@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using TravelBookingAPI;
 using TravelBookingAPI.Data;
 using TravelBookingAPI.Repository;
 using TravelBookingAPI.Repository.IRepository;
@@ -16,8 +17,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAirLineRepository, AirLineRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IJourneyRepository, JourneyRepository>();
-builder.Services.AddScoped<ILocalUserRepository, LocalUserRepository>();
-//builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 

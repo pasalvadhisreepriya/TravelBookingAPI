@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using TravelBookingAPI.Data;
 using TravelBookingAPI.Models;
+using TravelBookingAPI.Repository;
 using TravelBookingAPI.Repository.IRepository;
 
 namespace TravelBookingAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class FlightController : ControllerBase
     {
         private readonly IFlightRepository _flightRepository;
@@ -19,6 +23,7 @@ namespace TravelBookingAPI.Controllers
             _applicationDbContext=applicationDbContext;
         }
         [HttpGet]
+        [Authorize]
         public ActionResult Get()
         {
             var result = _flightRepository.Get();
@@ -26,6 +31,7 @@ namespace TravelBookingAPI.Controllers
 
         }
         [HttpPost]
+        [Authorize]
         public ActionResult Create(Flight flight)
 
         {
@@ -35,12 +41,21 @@ namespace TravelBookingAPI.Controllers
             }
 
 
+            var result1 = _flightRepository.Get().ToList();
+            var result2 = result1.Where(x => x.FlightCode==flight.FlightCode);
+            if (result2.Any())
+            {
+                return Ok("Flight already exists");
+            }
+
+
             _flightRepository.Create(flight);
             _flightRepository.Save();
             return Ok();
 
         }
         [HttpPut]
+        [Authorize]
         public ActionResult Update(Flight flight)
         {
             _flightRepository.Update(flight);
@@ -48,6 +63,7 @@ namespace TravelBookingAPI.Controllers
             return Ok(_flightRepository.Get());
         }
         [HttpDelete]
+        [Authorize(Roles = "admin")]
         public ActionResult Delete(string flightCode)
         {
             _flightRepository.Delete(flightCode);

@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
+using System.Net;
 using TravelBookingAPI.Models;
 using TravelBookingAPI.Repository;
 using TravelBookingAPI.Repository.IRepository;
@@ -10,40 +13,85 @@ namespace TravelBookingAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserRepository _UserRepository;
+        protected APIResponse _response;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository UserRepository)
         {
-            _userRepository=userRepository;
+            _UserRepository=UserRepository;
+            _response = new();
         }
+
+        [HttpPost("login")]
+
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
+        {
+            var loginResponse = await _UserRepository.Login(model);
+            if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Username or password is incorrect");
+                return BadRequest(_response);
+            }
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            _response.Result = loginResponse;
+            return Ok(_response);
+        }
+
+        [HttpPost("register")]
+
+        public async Task<IActionResult> Register([FromBody] RegisterationRequestDTO model)
+        {
+            bool ifUserNameUnique = _UserRepository.IsUniqueUser(model.UserName);
+            if (!ifUserNameUnique)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Username already exists");
+                return BadRequest(_response);
+            }
+
+            var user = await _UserRepository.Register(model);
+            if (user == null)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Error while registering");
+                return BadRequest(_response);
+            }
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            return Ok(_response);
+        }
+
         [HttpGet]
-        public ActionResult Get() {
-           var result= _userRepository.Get();
+        [Authorize]
+        public IActionResult Get()
+        {
+            var result = _UserRepository.Get();
             return Ok(result);
 
         }
-        [HttpPost]
-        public ActionResult Create(User user)
-        {
-            _userRepository.Create(user);
-            _userRepository.Save();
-            return Ok();
-
-        }
+       
         [HttpPut]
-        public ActionResult Update(User user)
+        [Authorize]
+        public IActionResult Update(User user)
         {
-            _userRepository.Update(user);
-            _userRepository.Save();
-            return Ok(_userRepository.Get());
+            _UserRepository.Update(user);
+            _UserRepository.Save();
+            return Ok(_UserRepository.Get());
+
         }
         [HttpDelete]
-        public ActionResult Delete(string email) {
-            _userRepository.Delete(email);
-            _userRepository.Save();
-            return Ok(_userRepository.Get());
+        [Authorize(Roles = "admin")]
+        public IActionResult Delete(string Email)
+        {
+            _UserRepository.Delete(Email);
+            _UserRepository.Save();
+            return Ok(_UserRepository.Get());
+
         }
-
-
     }
 }
